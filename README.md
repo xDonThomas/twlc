@@ -15,7 +15,7 @@
 ## 📦 Instalación
 
 ```bash
-go get github.com/xxxAlvaDevxxx/twlc
+go get github.com/xDonThomas/twlc
 ```
 
 ## 🧑‍💻 Uso
@@ -23,7 +23,7 @@ go get github.com/xxxAlvaDevxxx/twlc
 ### Importar
 
 ``` go
-import "github.com/xxxAlvaDevxxx/twlc"
+import "github.com/xDonThomas/twlc"
 ```
 
 ### Inicialización básica
@@ -135,7 +135,7 @@ Los colores se muestran en consola si tu terminal soporta ANSI.
 package main
 
 import (
-    "github.com/xxxAlvaDevxxx/twlc"
+    "github.com/xDonThomas/twlc"
 )
 
 func main() {
