@@ -40,6 +40,8 @@ type Twlc struct {
 	WithTime      bool
 	LogDir        string
 	LogFilePath   string
+	currentDate   string
+	file          *os.File
 }
 
 func (t *Twlc) WriteLog(messageType MessageType, message string) {
@@ -57,18 +59,20 @@ func (t *Twlc) WriteLog(messageType MessageType, message string) {
 }
 
 func (t *Twlc) logToFile(messageType MessageType, message string) {
-	date := time.Now().Format("20060102")
-	t.LogFilePath = filepath.Join(t.LogDir, "twlc_"+date+".log")
+	t.currentDate = time.Now().Format("20060102")
+	t.LogFilePath = filepath.Join(t.LogDir, "twlc_"+t.currentDate+".log")
+
 	// Create the log file if it doesn't exist
 	t.createLogFile()
+
+	var err error
 	// Open the log file for appending
-	file, err := os.OpenFile(t.LogFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	t.file, err = os.OpenFile(t.LogFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Fatalf("Failed to open log file: %v", err)
 	}
-	defer file.Close()
 
-	logger := log.New(file, "", log.LstdFlags)
+	logger := log.New(t.file, "", log.LstdFlags)
 	if t.WithTime {
 		logger.SetFlags(log.LstdFlags | log.Lshortfile)
 	}
@@ -155,11 +159,10 @@ func (t *Twlc) StructToJson(_struct interface{}) (string, error) {
 
 func (t *Twlc) createLogFile() {
 	if _, err := os.Stat(t.LogFilePath); os.IsNotExist(err) {
-		file, err := os.Create(t.LogFilePath)
+		t.file, err = os.Create(t.LogFilePath)
 		if err != nil {
 			log.Fatalf("Failed to create log file: %v", err)
 		}
-		file.Close()
 	}
 }
 
@@ -189,7 +192,7 @@ func DefaultTwlc() *Twlc {
 
 	createLogDir(logDir)
 
-	return &Twlc{true, true, true, true, true, true, logDir, ""}
+	return &Twlc{true, true, true, true, true, true, logDir, "", "", &os.File{}}
 }
 
 func createLogDir(logDir string) {
