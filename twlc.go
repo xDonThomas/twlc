@@ -20,6 +20,14 @@ const (
     Trace   MessageType = "TRACE"
 )
 
+var colorMap = map[MessageType]string{
+    Info:    "\033[34m",
+    Success: "\033[32m",
+    Warning: "\033[33m",
+    Error:   "\033[31m",
+    Debug:   "\033[35m",
+    Trace:   "\033[36m",
+}
 
 var Logger = DefaultTwlc()
 
@@ -68,42 +76,21 @@ func (t *Twlc) WriteLog(messageType MessageType, message string) {
 }
 
 func (t *Twlc) setColor(messageType MessageType, message string) (MessageType, string) {
-	saveMessageType := messageType
-	saveMessage := message
+    color, ok := colorMap[messageType]
+    if !ok {
+        return messageType, message
+    }
 
-	switch messageType {
-	case Info:
-		message = "\033[34m" + message + "\033[0m"
-		messageType = "\033[44;44m" + messageType + "\033[0m"
-	case Success:
-		message = "\033[32m" + message + "\033[0m"
-		messageType = "\033[42;32m" + messageType + "\033[0m"
-	case Warning:
-		message = "\033[33m" + message + "\033[0m"
-		messageType = "\033[43;33m" + messageType + "\033[0m"
-	case Error:
-		message = "\033[31m" + message + "\033[0m"
-		messageType = "\033[41;31m" + messageType + "\033[0m"
-	case Debug:
-		message = "\033[35m" + message + "\033[0m"
-		messageType = "\033[45;35m" + messageType + "\033[0m"
-	case Trace:
-		message = "\033[36m" + message + "\033[0m"
-		messageType = "\033[46;36m" + messageType + "\033[0m"
-	default:
-		return messageType, message
+    if t.FGColor {
+        message = color + message + "\033[0m"
+    }
+	if t.BGColor {
+		messageType = MessageType(color + string(messageType) + "\033[0m")
 	}
-
-	if !t.BGColor {
-		messageType = saveMessageType
-	}
-
-	if !t.FGColor {
-		message = saveMessage
-	}
-
-	return messageType, message
+	
+    return messageType, message
 }
+
 
 func (t *Twlc) Error(message string) {
 	t.WriteLog(Error, message)
