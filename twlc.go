@@ -100,27 +100,27 @@ func (t *Twlc) setColor(messageType string, message string) (string, string) {
 	return messageType, message
 }
 
-func (t *Twlc) WriteError(message string) {
+func (t *Twlc) Error(message string) {
 	t.WriteLog(Error, message)
 }
 
-func (t *Twlc) WriteWarning(message string) {
+func (t *Twlc) Warning(message string) {
 	t.WriteLog(Warning, message)
 }
 
-func (t *Twlc) WriteInfo(message string) {
+func (t *Twlc) Info(message string) {
 	t.WriteLog(Info, message)
 }
 
-func (t *Twlc) WriteSuccess(message string) {
+func (t *Twlc) Success(message string) {
 	t.WriteLog(Success, message)
 }
 
-func (t *Twlc) WriteDebug(message string) {
+func (t *Twlc) Debug(message string) {
 	t.WriteLog(Debug, message)
 }
 
-func (t *Twlc) WriteTrace(message string) {
+func (t *Twlc) Trace(message string) {
 	t.WriteLog(Trace, message)
 }
 
