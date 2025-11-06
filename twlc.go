@@ -87,6 +87,12 @@ func (t *Twlc) logToConsole(messageType MessageType, message string) {
 	}
 }
 
+func (t *Twlc) Close() {
+	if t.file != nil {
+		t.file.Close()
+	}
+}
+
 func (t *Twlc) setColor(messageType MessageType, message string) (MessageType, string) {
 	color, ok := colorMap[messageType]
 	if !ok {
