@@ -9,14 +9,17 @@ import (
 	"time"
 )
 
+type MessageType string
+
 const (
-	Info    = "INFO"
-	Success = "SUCCESS"
-	Warning = "WARNING"
-	Error   = "ERROR"
-	Debug   = "DEBUG"
-	Trace   = "TRACE"
+    Info    MessageType = "INFO"
+    Success MessageType = "SUCCESS"
+    Warning MessageType = "WARNING"
+    Error   MessageType = "ERROR"
+    Debug   MessageType = "DEBUG"
+    Trace   MessageType = "TRACE"
 )
+
 
 var Logger = DefaultTwlc()
 
@@ -31,7 +34,7 @@ type Twlc struct {
 	LogFilePath   string
 }
 
-func (t *Twlc) WriteLog(messageType string, message string) {
+func (t *Twlc) WriteLog(messageType MessageType, message string) {
 	if t.SaveInLogFile {
 		date := time.Now().Format("20060102")
 		t.LogFilePath = filepath.Join(t.LogDir, "twlc_"+date+".log")
@@ -64,7 +67,7 @@ func (t *Twlc) WriteLog(messageType string, message string) {
 	}
 }
 
-func (t *Twlc) setColor(messageType string, message string) (string, string) {
+func (t *Twlc) setColor(messageType MessageType, message string) (MessageType, string) {
 	saveMessageType := messageType
 	saveMessage := message
 
