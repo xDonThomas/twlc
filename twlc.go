@@ -12,21 +12,21 @@ import (
 type MessageType string
 
 const (
-    Info    MessageType = "INFO"
-    Success MessageType = "SUCCESS"
-    Warning MessageType = "WARNING"
-    Error   MessageType = "ERROR"
-    Debug   MessageType = "DEBUG"
-    Trace   MessageType = "TRACE"
+	Info    MessageType = "INFO"
+	Success MessageType = "SUCCESS"
+	Warning MessageType = "WARNING"
+	Error   MessageType = "ERROR"
+	Debug   MessageType = "DEBUG"
+	Trace   MessageType = "TRACE"
 )
 
 var colorMap = map[MessageType]string{
-    Info:    "\033[34m",
-    Success: "\033[32m",
-    Warning: "\033[33m",
-    Error:   "\033[31m",
-    Debug:   "\033[35m",
-    Trace:   "\033[36m",
+	Info:    "\033[34m",
+	Success: "\033[32m",
+	Warning: "\033[33m",
+	Error:   "\033[31m",
+	Debug:   "\033[35m",
+	Trace:   "\033[36m",
 }
 
 var Logger = DefaultTwlc()
@@ -44,22 +44,7 @@ type Twlc struct {
 
 func (t *Twlc) WriteLog(messageType MessageType, message string) {
 	if t.SaveInLogFile {
-		date := time.Now().Format("20060102")
-		t.LogFilePath = filepath.Join(t.LogDir, "twlc_"+date+".log")
-		// Create the log file if it doesn't exist
-		t.createLogFile()
-		// Open the log file for appending
-		file, err := os.OpenFile(t.LogFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-		if err != nil {
-			log.Fatalf("Failed to open log file: %v", err)
-		}
-		defer file.Close()
-
-		logger := log.New(file, "", log.LstdFlags)
-		if t.WithTime {
-			logger.SetFlags(log.LstdFlags | log.Lshortfile)
-		}
-		logger.Printf("[%s] %s", messageType, message)
+		t.logToFile(messageType, message)
 	}
 
 	if t.ColorMessages {
@@ -67,30 +52,52 @@ func (t *Twlc) WriteLog(messageType MessageType, message string) {
 	}
 
 	if t.ShowInConsole {
-		if t.WithTime {
-			log.Printf("[%s] %s", messageType, message)
-		} else {
-			fmt.Printf("[%s] %s\n", messageType, message)
-		}
+		t.logToConsole(messageType, message)
+	}
+}
+
+func (t *Twlc) logToFile(messageType MessageType, message string) {
+	date := time.Now().Format("20060102")
+	t.LogFilePath = filepath.Join(t.LogDir, "twlc_"+date+".log")
+	// Create the log file if it doesn't exist
+	t.createLogFile()
+	// Open the log file for appending
+	file, err := os.OpenFile(t.LogFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatalf("Failed to open log file: %v", err)
+	}
+	defer file.Close()
+
+	logger := log.New(file, "", log.LstdFlags)
+	if t.WithTime {
+		logger.SetFlags(log.LstdFlags | log.Lshortfile)
+	}
+	logger.Printf("[%s] %s", messageType, message)
+}
+
+func (t *Twlc) logToConsole(messageType MessageType, message string) {
+	if t.WithTime {
+		log.Printf("[%s] %s", messageType, message)
+	} else {
+		fmt.Printf("[%s] %s\n", messageType, message)
 	}
 }
 
 func (t *Twlc) setColor(messageType MessageType, message string) (MessageType, string) {
-    color, ok := colorMap[messageType]
-    if !ok {
-        return messageType, message
-    }
+	color, ok := colorMap[messageType]
+	if !ok {
+		return messageType, message
+	}
 
-    if t.FGColor {
-        message = color + message + "\033[0m"
-    }
+	if t.FGColor {
+		message = color + message + "\033[0m"
+	}
 	if t.BGColor {
 		messageType = MessageType(color + string(messageType) + "\033[0m")
 	}
-	
-    return messageType, message
-}
 
+	return messageType, message
+}
 
 func (t *Twlc) Error(message string) {
 	t.WriteLog(Error, message)
