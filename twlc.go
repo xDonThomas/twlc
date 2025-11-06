@@ -18,6 +18,8 @@ const (
 	Trace   = "TRACE"
 )
 
+var Logger = DefaultTwlc()
+
 type Twlc struct {
 	SaveInLogFile bool
 	ShowInConsole bool
