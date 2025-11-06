@@ -89,12 +89,12 @@ func TestWriteLog(t *testing.T) {
 
 func TestWriteConstants(t *testing.T) {
 	twlc := DefaultTwlc()
-	twlc.WriteInfo(Info)
-	twlc.WriteSuccess(Success)
-	twlc.WriteError(Error)
-	twlc.WriteWarning(Warning)
-	twlc.WriteDebug(Debug)
-	twlc.WriteTrace(Trace)
+	twlc.Info(string(Info))
+	twlc.Success(string(Success))
+	twlc.Error(string(Error))
+	twlc.Warning(string(Warning))
+	twlc.Debug(string(Debug))
+	twlc.Trace(string(Trace))
 
 	// Check if the log file was created
 	if _, err := os.Stat(twlc.LogFilePath); os.IsNotExist(err) {
@@ -109,7 +109,7 @@ func TestWriteConstants(t *testing.T) {
 
 func TestSetColor(t *testing.T) {
 	cases := []struct {
-		messageType string
+		messageType MessageType
 		expected    string
 	}{
 		{Info, "\033[34mTest message\033[0m"},
@@ -132,7 +132,7 @@ func TestSetColor(t *testing.T) {
 
 	// Test with an unknown message type
 	unknownMessageType := "Unknown"
-	_, unknownMessage := twlc.setColor(unknownMessageType, "Test message")
+	_, unknownMessage := twlc.setColor(MessageType(unknownMessageType), "Test message")
 	if unknownMessage != "Test message" {
 		t.Errorf("Expected 'Test message', got %s", unknownMessage)
 	}
@@ -274,13 +274,13 @@ func TestWriteLogWithOutTime(t *testing.T) {
 func TestBGandFGColor(t *testing.T) {
 	twlc := DefaultTwlc()
 
-	twlc.WriteInfo("Test message with background and foreground color")
+	twlc.Info("Test message with background and foreground color")
 	twlc.BGColor = false
-	twlc.WriteInfo("Test message without background color and with foreground color")
+	twlc.Info("Test message without background color and with foreground color")
 	twlc.FGColor = false
-	twlc.WriteInfo("Test message without background and foreground color")
+	twlc.Info("Test message without background and foreground color")
 	twlc.BGColor = true
-	twlc.WriteInfo("Test message with background color and without foreground color")
+	twlc.Info("Test message with background color and without foreground color")
 
 	// Clean up
 	err := os.RemoveAll(twlc.LogDir)
